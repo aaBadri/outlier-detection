@@ -4,31 +4,36 @@ import random
 import numpy as np
 import pandas as pd
 
-train_url = "./dump_data_10k_rep_0/ipsweep_normal.csv"
-train = pd.read_csv(train_url, delimiter=';', header=None)
+train_url = "./data1.csv"
+train = pd.read_csv(train_url, delimiter=',', header=None)
 train = train.sample(frac=1)
-ytrain = train[8]
-train = train.drop(8, axis=1)
+ytrain = train[274]
+train = train.drop(274, axis=1)
 print("data is loaded")
 
-train = train[:100]
+train_temp = train[:100]
 
 
-def hash(train, hash_rate):
+def hash_train(train, hash_rate):
     hashed_train = []
+    print(train.shape[0], train.shape[1])
     for i in range(0, hash_rate):
         random_vector = []
-        for j in range(0, train.shape[0]):
-            random_vector[j] = random.randint(-1, 1)
+        for j in range(0, train.shape[1]):
+            random_vector.append(random.randint(-1, 1))
         hashed_train.append([])
         for index, record in train.iterrows():
             dotted = np.dot(record, random_vector)
-        if dotted >= 0:
-            hashed_train[i].append(1)
-        else:
-            hashed_train[i].append(-1)
-    return hashed_train
+            if dotted >= 0:
+                hashed_train[i].append(1)
+            else:
+                hashed_train[i].append(-1)
+    print(hashed_train)
+    return pd.DataFrame(hashed_train)
 
+
+train = hash_train(train_temp, 20)
+train.to_csv("hash_train.csv", index=False)
 
 def getABOF(vertex, a, b):
     va = a - vertex
@@ -42,6 +47,7 @@ def getABOF(vertex, a, b):
 
 
 varABOF = []
+
 for t, center in train.iterrows():
     if (t % 10 == 0):
         print(t)
