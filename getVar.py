@@ -7,11 +7,12 @@ import pandas as pd
 train_url = "./global.csv"
 train = pd.read_csv(train_url, delimiter=',', header=None)
 train = train.sample(frac=1)
-ytrain = train.iloc[:,-1]
+ytrain = train.iloc[:, -1]
 train = train[:-1]
 print("data is loaded")
 
-train_temp = train[:100]
+train_temp = train[:250]
+MOD_RATE = 15
 
 
 def hash_train(train, hash_rate):
@@ -31,13 +32,14 @@ def hash_train(train, hash_rate):
     print("width1 ", len(hashed_train))
     print("height1 ", len(hashed_train[0]))
     hashed_train = list(map(list, zip(*hashed_train)))
-    print("width ",len(hashed_train))
-    print("height",len(hashed_train[0]))
+    print("width ", len(hashed_train))
+    print("height", len(hashed_train[0]))
     return pd.DataFrame(hashed_train)
 
 
 train = hash_train(train_temp, 20)
 train.to_csv("hash_train.csv", index=False)
+
 
 def getABOF(vertex, a, b):
     va = a - vertex
@@ -52,9 +54,11 @@ def getABOF(vertex, a, b):
 
 varABOF = []
 varAvg = []
+varModABOF = []
+varModAVG = []
 
 for t, center in train.iterrows():
-    if (t % 10 == 0):
+    if t % 10 == 0:
         print(t)
     centerABOF = []
     center = list(center)
@@ -66,9 +70,17 @@ for t, center in train.iterrows():
                     centerABOF.append(getABOF(center, np.array(list(i)), np.array(rowJ)))
     varABOF.append(np.var(centerABOF))
     varAvg.append(np.average(centerABOF))
+
+for record in varABOF:
+    varModABOF.append(np.remainder(record, MOD_RATE))
+
+for record in varAvg:
+    varModAVG.append(np.remainder(record, MOD_RATE))
+
 train["ABOF"] = varABOF
 train["avg"] = varAvg
+train["mod_avg"] = varModAVG
+train["mod_ABOF"] = varModABOF
 train["label"] = ytrain
 print("finish")
 train.to_csv("mammadAgha.csv", index=False)
-
