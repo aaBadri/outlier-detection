@@ -4,11 +4,11 @@ import random
 import numpy as np
 import pandas as pd
 
-train_url = "./data1.csv"
+train_url = "./global.csv"
 train = pd.read_csv(train_url, delimiter=',', header=None)
 train = train.sample(frac=1)
-ytrain = train[274]
-train = train.drop(274, axis=1)
+ytrain = train.iloc[:,-1]
+train = train[:-1]
 print("data is loaded")
 
 train_temp = train[:100]
@@ -28,7 +28,11 @@ def hash_train(train, hash_rate):
                 hashed_train[i].append(1)
             else:
                 hashed_train[i].append(-1)
-    print(hashed_train)
+    print("width1 ", len(hashed_train))
+    print("height1 ", len(hashed_train[0]))
+    hashed_train = list(map(list, zip(*hashed_train)))
+    print("width ",len(hashed_train))
+    print("height",len(hashed_train[0]))
     return pd.DataFrame(hashed_train)
 
 
@@ -43,10 +47,11 @@ def getABOF(vertex, a, b):
     angle_degree = np.degrees(angle)
     dista = np.linalg.norm(va)
     distb = np.linalg.norm(vb)
-    return angle_degree / (dista ** 2) * (distb ** 2)
+    return angle_degree
 
 
 varABOF = []
+varAvg = []
 
 for t, center in train.iterrows():
     if (t % 10 == 0):
@@ -60,10 +65,10 @@ for t, center in train.iterrows():
                 if center != rowJ and list(i) != rowJ:
                     centerABOF.append(getABOF(center, np.array(list(i)), np.array(rowJ)))
     varABOF.append(np.var(centerABOF))
+    varAvg.append(np.average(centerABOF))
 train["ABOF"] = varABOF
+train["avg"] = varAvg
 train["label"] = ytrain
 print("finish")
 train.to_csv("mammadAgha.csv", index=False)
-print(varABOF)
-print(train.head())
 
