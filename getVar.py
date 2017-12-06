@@ -3,6 +3,7 @@ import random
 
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 
 train_url = "./global.csv"
 train = pd.read_csv(train_url, delimiter=',', header=None)
@@ -11,7 +12,7 @@ ytrain = train.iloc[:, -1]
 train = train[:-1]
 print("data is loaded")
 
-train_temp = train[:40]
+train_temp = train[:30]
 MOD_RATE = 15
 
 
@@ -50,6 +51,17 @@ def getABOF(vertex, a, b):
     dista = np.linalg.norm(va)
     distb = np.linalg.norm(vb)
     return angle_degree
+
+
+def plot(axisX, axisY, list1, list2, color, list12=[], list22=[], color2=None):
+    if list12 is not []:
+        plt.plot(list1, list2, color + 'o', list12, list22, color2 + 's')
+        plt.axis([0, axisX, 0, axisY])
+        plt.show()
+    else:
+        plt.plot(list1, list2, color + 'o')
+        plt.axis([0, axisX, 0, axisY])
+        plt.show()
 
 
 def get_ROC(train):
@@ -116,6 +128,10 @@ train["mod_avg"] = varModAVG
 train["mod_ABOF"] = varModABOF
 train["label"] = ytrain
 roc = get_ROC(train)
-print(roc)
+print(roc[0], '\n', roc[1])
+t = np.arange(0., 5., 0.01)
+
+plot(1, 1, roc[1], roc[0], 'b', t, t, 'r')
+
 print("finish")
 train.to_csv("mammadAgha.csv", index=False)
