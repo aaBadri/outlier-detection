@@ -56,7 +56,8 @@ def get_ROC(train):
     tp = fn = fp = tn = tpr = fpr = 0
     result = train["ABOF"]
     label = train["label"]
-    roc = []
+    tpr_list = fpr_list = []
+
     for tr in range(int(np.min(result)), int(np.max(result))):
         for index, i in train.iterrows():
             if result[index] < tr:  # outlier
@@ -79,8 +80,9 @@ def get_ROC(train):
             fpr = 0
         else:
             fpr = fp / (fp + tn)
-        roc.append((tpr, fpr))
-    return roc
+        tpr_list.append(tpr)
+        fpr_list.append(fpr)
+    return tpr_list, fpr_list
 
 
 varABOF = []
