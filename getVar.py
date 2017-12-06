@@ -12,7 +12,7 @@ ytrain = train.iloc[:, -1]
 train = train[:-1]
 print("data is loaded")
 
-train_temp = train[:30]
+train_temp = train[:200]
 MOD_RATE = 15
 
 
@@ -68,7 +68,9 @@ def get_ROC(train):
     tp = fn = fp = tn = tpr = fpr = 0
     result = train["ABOF"]
     label = train["label"]
-    tpr_list = fpr_list = []
+    print(result, label)
+    tpr_list = []
+    fpr_list = []
 
     for tr in range(int(np.min(result)), int(np.max(result))):
         for index, i in train.iterrows():
@@ -128,7 +130,7 @@ train["mod_avg"] = varModAVG
 train["mod_ABOF"] = varModABOF
 train["label"] = ytrain
 roc = get_ROC(train)
-print(roc[0], '\n', roc[1])
+print(roc[0], roc[1])
 t = np.arange(0., 5., 0.01)
 
 plot(1, 1, roc[1], roc[0], 'b', t, t, 'r')
