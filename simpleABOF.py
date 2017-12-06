@@ -12,7 +12,7 @@ ytrain = train.iloc[:, -1]
 train = train[:-1]
 print("data is loaded")
 
-train_temp = train[:300]
+train_temp = train[:40]
 MOD_RATE = 15
 
 
@@ -36,10 +36,6 @@ def hash_train(train, hash_rate):
     print("width ", len(hashed_train))
     print("height", len(hashed_train[0]))
     return pd.DataFrame(hashed_train)
-
-
-train = hash_train(train_temp, 20)
-train.to_csv("hash_train.csv", index=False)
 
 
 def getABOF(vertex, a, b):
@@ -98,6 +94,8 @@ def get_ROC(train):
         fpr_list.append(fpr)
     return tpr_list, fpr_list
 
+# train = hash_train(train_temp, 20)
+# train.to_csv("hash_train.csv", index=False)
 
 varABOF = []
 varAvg = []
@@ -137,3 +135,4 @@ plot(1, 1, roc[1], roc[0], 'b', t, t, 'r')
 
 print("finish")
 train.to_csv("mammadAgha.csv", index=False)
+
