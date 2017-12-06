@@ -12,7 +12,7 @@ ytrain = train.iloc[:, -1]
 train = train[:-1]
 print("data is loaded")
 
-train_temp = train[:200]
+train_temp = train[:300]
 MOD_RATE = 15
 
 
