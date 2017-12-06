@@ -11,7 +11,7 @@ ytrain = train.iloc[:, -1]
 train = train[:-1]
 print("data is loaded")
 
-train_temp = train[:250]
+train_temp = train[:40]
 MOD_RATE = 15
 
 
@@ -52,6 +52,37 @@ def getABOF(vertex, a, b):
     return angle_degree
 
 
+def get_ROC(train):
+    tp = fn = fp = tn = tpr = fpr = 0
+    result = train["ABOF"]
+    label = train["label"]
+    roc = []
+    for tr in range(int(np.min(result)), int(np.max(result))):
+        for index, i in train.iterrows():
+            if result[index] < tr:  # outlier
+                if label[index] == 1:
+                    tp += 1
+                else:
+                    fp += 1
+            else:  # normal
+                if label[index] == 1:
+                    fn += 1
+                else:
+                    tn += 1
+        # print(tp, fn, fp, tn)
+        if tp == 0 and fn == 0:
+            tpr = 0
+        else:
+            tpr = tp / (tp + fn)
+
+        if fp == 0 and tn == 0:
+            fpr = 0
+        else:
+            fpr = fp / (fp + tn)
+        roc.append((tpr, fpr))
+    return roc
+
+
 varABOF = []
 varAvg = []
 varModABOF = []
@@ -82,5 +113,7 @@ train["avg"] = varAvg
 train["mod_avg"] = varModAVG
 train["mod_ABOF"] = varModABOF
 train["label"] = ytrain
+roc = get_ROC(train)
+print(roc)
 print("finish")
 train.to_csv("mammadAgha.csv", index=False)
