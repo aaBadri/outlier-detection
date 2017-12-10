@@ -5,15 +5,25 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-train_url = "./global.csv"
+train_url = "./Book1.csv"
 train = pd.read_csv(train_url, delimiter=',', header=None)
 train = train.sample(frac=1)
 ytrain = train.iloc[:, -1]
-train = train[:-1]
 print("data is loaded")
 
-train_temp = train[:300]
 MOD_RATE = 15
+
+
+def sample(record_number, train):
+    origin_train = train
+    origin_train["label"] = ytrain
+    outliers = origin_train[origin_train["label"] == 1]
+    normal = origin_train[origin_train["label"] == 0]
+    outliers = outliers.sample(frac=1)
+    outliers = outliers[:10]
+    normal = normal[:record_number - 10]
+    data = pd.concat([outliers, normal])
+    return pd.DataFrame(data)
 
 
 def hash_train(train, hash_rate):
@@ -36,10 +46,6 @@ def hash_train(train, hash_rate):
     print("width ", len(hashed_train))
     print("height", len(hashed_train[0]))
     return pd.DataFrame(hashed_train)
-
-
-train = hash_train(train_temp, 20)
-train.to_csv("hash_train.csv", index=False)
 
 
 def getABOF(vertex, a, b):
@@ -99,6 +105,11 @@ def get_ROC(train):
     return tpr_list, fpr_list
 
 
+train_temp = sample(100, train)
+print(train_temp)
+train = hash_train(train_temp, 20)
+train.to_csv("hash_train.csv", index=False)
+
 varABOF = []
 varAvg = []
 varModABOF = []
@@ -137,4 +148,3 @@ plot(1, 1, roc[1], roc[0], 'b', t, t, 'r')
 
 print("finish")
 train.to_csv("mammadAgha.csv", index=False)
-

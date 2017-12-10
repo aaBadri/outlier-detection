@@ -6,15 +6,26 @@ import math
 import pprint
 from operator import add
 
-train_url = "./global.csv"
+train_url = "./Book1.csv"
 train = pd.read_csv(train_url, delimiter=',', header=None)
 # train = train.sample(frac=1)
 ytrain = train.iloc[:, -1]
 train = train[:-1]
 print("data is loaded")
-DATA_SIZE = 1100
 train_temp = train
 train = train_temp
+
+
+def sample(record_number, train):
+    origin_train = train
+    origin_train["label"] = ytrain
+    outliers = origin_train[origin_train["label"] == 1]
+    normal = origin_train[origin_train["label"] == 0]
+    outliers = outliers.sample(frac=1)
+    outliers = outliers[:10]
+    normal = normal[:record_number - 10]
+    data = pd.concat([outliers, normal])
+    return pd.DataFrame(data)
 
 
 def plot(axisX, axisY, list1, list2, color, list12=[], list22=[], color2=None):
@@ -37,7 +48,7 @@ def get_ROC(train):
     tpr_list = []
     fpr_list = []
 
-    for tr in range(int(np.min(result)), int(np.max(result))+1):
+    for tr in range(int(np.min(result)), int(np.max(result)) + 1):
         for index, i in train.iterrows():
             if result[index] < tr:  # outlier
                 if label[index] == 1:
@@ -84,7 +95,7 @@ def first_moment_estimator(projected, t, n):
         cl = [0] * n
         cr = [0] * n
         li = projected[i]
-        print("li:",li)
+        print("li:", li)
         for j in range(0, n):
             print("j: ", j)
             idx = li[j][0]
@@ -140,7 +151,7 @@ def fast_voa(s, t, s1, s2):
     return var
 
 
-train["rate"] = fast_voa(train, 10, 5, 5)
+train["rate"] = fast_voa(train, 20, 5, 5)
 train["label"] = ytrain
 roc = get_ROC(train)
 print("roc pair: ", roc[0], roc[1])
@@ -150,4 +161,3 @@ plot(1, 1, roc[1], roc[0], 'b', t, t, 'r')
 
 print("finish")
 train.to_csv("mammadAgha.csv", index=False)
-
