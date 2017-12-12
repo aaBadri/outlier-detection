@@ -12,8 +12,6 @@ train = pd.read_csv(train_url, delimiter=',', header=None)
 ytrain = train.iloc[:, -1]
 train = train[:-1]
 print("data is loaded")
-train_temp = train
-train = train_temp
 
 
 def sample(record_number, train):
@@ -43,8 +41,6 @@ def get_ROC(train):
     tp = fn = fp = tn = tpr = fpr = 0
     result = train["rate"]
     label = train["label"]
-    print("result: ", result)
-    print("label: ", label)
     tpr_list = []
     fpr_list = []
 
@@ -95,9 +91,7 @@ def first_moment_estimator(projected, t, n):
         cl = [0] * n
         cr = [0] * n
         li = projected[i]
-        print("li:", li)
         for j in range(0, n):
-            print("j: ", j)
             idx = li[j][0]
             cl[idx] = j - 1
             cr[idx] = n - 1 - cl[idx]
@@ -151,7 +145,7 @@ def fast_voa(s, t, s1, s2):
     return var
 
 
-train["rate"] = fast_voa(train, 20, 5, 5)
+train["rate"] = fast_voa(train, 10, 10, 5)
 train["label"] = ytrain
 roc = get_ROC(train)
 print("roc pair: ", roc[0], roc[1])
