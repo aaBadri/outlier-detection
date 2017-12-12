@@ -86,6 +86,7 @@ def get_ROC(train):
 # train = hash_train(train_temp, 20)
 # train.to_csv("hash_train.csv", index=False)
 train = sample(100, train)
+print(train)
 varABOF = []
 varAvg = []
 varModABOF = []
