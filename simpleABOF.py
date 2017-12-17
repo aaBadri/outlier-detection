@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-train_url = "./global.csv"
+train_url = "./data_in/global.csv"
 train = pd.read_csv(train_url, delimiter=',', header=None)
 train = train.sample(frac=1)
 ytrain = train.iloc[:, -1]
@@ -124,4 +124,4 @@ t = np.arange(0., 5., 0.01)
 plot(1, 1, roc[1], roc[0], 'b', t, t, 'r')
 
 print("finish")
-train.to_csv("mammadAgha.csv", index=False)
+train.to_csv("./data_out/mammadAgha.csv", index=False)
