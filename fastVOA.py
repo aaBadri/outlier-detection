@@ -6,7 +6,7 @@ import math
 import pprint
 from operator import add
 
-train_url = "./Book1.csv"
+train_url = "./data_in/Book1.csv"
 train = pd.read_csv(train_url, delimiter=',', header=None)
 # train = train.sample(frac=1)
 ytrain = train.iloc[:, -1]
@@ -154,4 +154,4 @@ t = np.arange(0., 5., 0.01)
 plot(1, 1, roc[1], roc[0], 'b', t, t, 'r')
 
 print("finish")
-train.to_csv("mammadAgha.csv", index=False)
+train.to_csv("./data_out/mammadAgha.csv", index=False)
