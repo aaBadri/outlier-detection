@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 
 train_url = "./data_in/Book1.csv"
+
 train = pd.read_csv(train_url, delimiter=',', header=None)
 train = train.sample(frac=1)
 ytrain = train.iloc[:, -1]
@@ -122,6 +123,7 @@ def get_ROC(train):
 
 train_temp = sample(150, train)
 print(train_temp)
+
 
 train = hash_train(train_temp, 20)
 train.to_csv("./data_out/hash_train.csv", index=False)
