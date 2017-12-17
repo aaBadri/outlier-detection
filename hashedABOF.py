@@ -1,9 +1,9 @@
 # TODO we do not check if center and a and b are in a line
 import random
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 
 train_url = "./data_in/Book1.csv"
 train = pd.read_csv(train_url, delimiter=',', header=None)
@@ -24,6 +24,21 @@ def sample(record_number, train):
     normal = normal[:record_number - 10]
     data = pd.concat([outliers, normal])
     return pd.DataFrame(data)
+
+
+def random_projection(S, t):
+    l = []
+    for i in range(0, t):
+        ri = []
+        for j in range(0, S.shape[1]):
+            ri.append(random.randint(0, 1))
+        l.append([])
+        for index, record in S.iterrows():
+            dotted = np.dot(record, ri)
+            l[i].append(dotted)
+        # l[i] = sorted(l[i], key=lambda x: x[1])
+    l = list(map(list, zip(*l)))
+    return pd.DataFrame(l)
 
 
 def hash_train(train, hash_rate):
@@ -105,10 +120,12 @@ def get_ROC(train):
     return tpr_list, fpr_list
 
 
-train_temp = sample(100, train)
+train_temp = sample(150, train)
 print(train_temp)
+
 train = hash_train(train_temp, 20)
 train.to_csv("./data_out/hash_train.csv", index=False)
+
 
 varABOF = []
 varAvg = []
