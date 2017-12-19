@@ -22,6 +22,7 @@ def sample(record_number, out_number, train):
     origin_train["label"] = ytrain
     outliers = origin_train[origin_train["label"] == 1]
     normal = origin_train[origin_train["label"] == 0]
+    print(normal)
     outliers = outliers.sample(frac=1)
     final_outliers = outliers[:out_number]
     remain_outliers = outliers[out_number:]
@@ -47,10 +48,9 @@ def random_projection(S, t):
         l.append([])
         for index, record in S.iterrows():
             dotted = np.dot(record, ri)
-            l[i].append(dotted)
-            # l[i] = sorted(l[i], key=lambda x: x[1])
-    l = list(map(list, zip(*l)))
-    return pd.DataFrame(l)
+            l[i].append((index, dotted))
+        l[i] = sorted(l[i], key=lambda x: x[1])
+    return l
 
 
 def hash_train(train, hash_rate):
@@ -168,9 +168,9 @@ def frobenius_norm(train, t, n):
     return f2
 
 
-def fast_voa(s, t, s1, s2):
-    n = s.shape[0]
-    projected = random_projection(s, t)
+def fast_voa(s1, s2, projected):
+    n = projected.shape[0]
+    t = projected.shape[1]
     f1 = first_moment_estimator(projected, t, n)
     y = []
     for i in range(0, s2):
@@ -194,6 +194,7 @@ def fast_voa(s, t, s1, s2):
 
 def kmeans(train, test, train_record_number, outlier_number, n_clusters, n_init, max_iter):
     train_temp, remain_data = sample(train_record_number, outlier_number, train)
+    print(train_temp)
     kmeans = KMeans(n_clusters=n_clusters, random_state=None, n_init=n_init, max_iter=max_iter).fit(train_temp)
     result = kmeans.predict(test)
     return list(result)
@@ -202,13 +203,17 @@ def kmeans(train, test, train_record_number, outlier_number, n_clusters, n_init,
 test, remain_data = sample(150, 10, train)
 
 test = random_projection(test, 20)
+test = list(map(list, zip(*test)))
+test = pd.DataFrame(test)
 # print(test.shape)
 remain_data = random_projection(remain_data, 20)
+remain_data = list(map(list, zip(*remain_data)))
+remain_data = pd.DataFrame(remain_data)
 # print(remain_data.shape)
 train.to_csv("./data_out/hash_train.csv", index=False)
 
 cluster_labels = kmeans(remain_data, test, 600, 20, CLUSTER_NUMBER, 10, 300)
-test["cluster"] = cluster_labels
+test['cluster'] = cluster_labels
 print(test)
 
 clusters = list()
@@ -216,7 +221,9 @@ for i in range(0, CLUSTER_NUMBER):
     clusters.append(test[test['cluster'] == i])
 
 for cluster in clusters:
-    cluster["rate"] = fast_voa(cluster, 10, 10, 5)
+    cluster_list = cluster.tolist()
+    cluster_list = list(map(list, zip(*cluster_list)))
+    cluster["rate"] = fast_voa(10, 5, cluster_list)
 
 concatted_clusters = pd.DataFrame([])
 for i in range(0, CLUSTER_NUMBER):
