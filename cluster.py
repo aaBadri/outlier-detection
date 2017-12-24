@@ -48,8 +48,8 @@ def random_projection(S, t):
         l.append([])
         for index, record in S.iterrows():
             dotted = np.dot(record, ri)
-            l[i].append((index, dotted))
-        l[i] = sorted(l[i], key=lambda x: x[1])
+            l[i].append(dotted)
+        # l[i] = sorted(l[i], key=lambda x: x[1])
     return l
 
 
@@ -194,7 +194,7 @@ def fast_voa(s1, s2, projected):
 
 def kmeans(train, test, train_record_number, outlier_number, n_clusters, n_init, max_iter):
     train_temp, remain_data = sample(train_record_number, outlier_number, train)
-    print(train_temp)
+    print(train)
     kmeans = KMeans(n_clusters=n_clusters, random_state=None, n_init=n_init, max_iter=max_iter).fit(train_temp)
     result = kmeans.predict(test)
     return list(result)
@@ -214,20 +214,39 @@ train.to_csv("./data_out/hash_train.csv", index=False)
 
 cluster_labels = kmeans(remain_data, test, 600, 20, CLUSTER_NUMBER, 10, 300)
 test['cluster'] = cluster_labels
-print(test)
+# print(test)
 
 clusters = list()
 for i in range(0, CLUSTER_NUMBER):
     clusters.append(test[test['cluster'] == i])
 
+calculated_clusters = []
+
 for cluster in clusters:
-    cluster_list = cluster.tolist()
-    cluster_list = list(map(list, zip(*cluster_list)))
-    cluster["rate"] = fast_voa(10, 5, cluster_list)
+    cluster.drop(['cluster'], axis=1, inplace=True)
+    feature_number = cluster.shape[1]
+    record_number = cluster.shape[0]
+    original_cluster = cluster.copy()
+    # cluster_list = cluster.tolist()
+    for i in range(0, record_number):
+        for j in range(0, feature_number):
+            dotted = cluster.iloc[i][j]
+            cluster.set_value(i, j, (i, dotted))
+    l = []
+
+    for i in range(0, record_number):
+        record = cluster[i]
+        l.append(record.tolist())
+    cluster_list = list(map(list, zip(*l)))
+
+    for i in range(0, feature_number):
+        cluster_list[i] = sorted(cluster_list[i], key=lambda x: x[1])
+    original_cluster["rate"] = fast_voa(10, 5, cluster_list)
+    calculated_clusters.append(original_cluster)
 
 concatted_clusters = pd.DataFrame([])
 for i in range(0, CLUSTER_NUMBER):
-    concatted_clusters = pd.concat([concatted_clusters, clusters[i]])
+    concatted_clusters = pd.concat([concatted_clusters, calculated_clusters[i]])
 
 concatted_clusters["label"] = ytrain
 roc = get_ROC(concatted_clusters)
