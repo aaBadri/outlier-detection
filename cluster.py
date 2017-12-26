@@ -4,6 +4,7 @@ from sklearn.cluster import KMeans
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import pprint
 import sklearn as sk
 
 train_url = "./data_in/Book1.csv"
@@ -22,7 +23,6 @@ def sample(record_number, out_number, train):
     origin_train["label"] = ytrain
     outliers = origin_train[origin_train["label"] == 1]
     normal = origin_train[origin_train["label"] == 0]
-    print(normal)
     outliers = outliers.sample(frac=1)
     final_outliers = outliers[:out_number]
     remain_outliers = outliers[out_number:]
@@ -99,7 +99,7 @@ def plot(axisX, axisY, list1, list2, color, list12=[], list22=[], color2=None):
 
 def get_ROC(train):
     tp = fn = fp = tn = tpr = fpr = 0
-    result = train["ABOF"]
+    result = train["rate"]
     label = train["label"]
     print(result, label)
     tpr_list = []
@@ -168,9 +168,9 @@ def frobenius_norm(train, t, n):
     return f2
 
 
-def fast_voa(s1, s2, projected):
-    n = projected.shape[0]
-    t = projected.shape[1]
+def fast_voa(s1, s2, n, t, projected):
+    # n = projected.shape[0]
+    # t = projected.shape[1]
     f1 = first_moment_estimator(projected, t, n)
     y = []
     for i in range(0, s2):
@@ -194,7 +194,6 @@ def fast_voa(s1, s2, projected):
 
 def kmeans(train, test, train_record_number, outlier_number, n_clusters, n_init, max_iter):
     train_temp, remain_data = sample(train_record_number, outlier_number, train)
-    print(train)
     kmeans = KMeans(n_clusters=n_clusters, random_state=None, n_init=n_init, max_iter=max_iter).fit(train_temp)
     result = kmeans.predict(test)
     return list(result)
@@ -228,20 +227,30 @@ for cluster in clusters:
     record_number = cluster.shape[0]
     original_cluster = cluster.copy()
     # cluster_list = cluster.tolist()
-    for i in range(0, record_number):
+    # for i in range(0, record_number):
+    #     for j in range(0, feature_number):
+    #         dotted = cluster.iloc[i][j]
+    #         cluster.set_value(i, j, (i, dotted))
+    cluster_list = []
+    index = 0
+    for row in cluster.iterrows():
+        previous_index, data = row
+        data = data.tolist()
         for j in range(0, feature_number):
-            dotted = cluster.iloc[i][j]
-            cluster.set_value(i, j, (i, dotted))
-    l = []
-
-    for i in range(0, record_number):
-        record = cluster[i]
-        l.append(record.tolist())
-    cluster_list = list(map(list, zip(*l)))
+            data[j] = (index, data[j])
+        cluster_list.append(data)
+        index += 1
+    # for i in range(0, record_number):
+    #     record = cluster.iloc[i:i+1, :]
+    #     record = record.tolist()
+    #     for j in range(0, feature_number):
+    #         record[j] = (i, record[j])
+    #     l.append(record)
+    cluster_list = list(map(list, zip(*cluster_list)))
 
     for i in range(0, feature_number):
         cluster_list[i] = sorted(cluster_list[i], key=lambda x: x[1])
-    original_cluster["rate"] = fast_voa(10, 5, cluster_list)
+    original_cluster["rate"] = fast_voa(10, 5, record_number, feature_number, cluster_list)
     calculated_clusters.append(original_cluster)
 
 concatted_clusters = pd.DataFrame([])
