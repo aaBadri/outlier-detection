@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 from modules import dimension_reduction as dim_red
 from modules import clustering as cluster
 from modules import evaluation as eval
+import pprint
+from mlxtend.evaluate import confusion_matrix
 
 
 def sample(record_number, train):
@@ -29,6 +31,16 @@ def plot(axisX, axisY, list1, list2, color, list12=[], list22=[], color2=None):
         plt.show()
 
 
+def prepare_projected_data(projected, t):
+    result = list()
+    for i in range(0, t):
+        l = sorted(projected[i], key=lambda x: x[0])
+        l = list(map(lambda x: x[1], l))
+        result.append(l)
+    result = list(map(list, zip(*result)))
+    return result
+
+
 # 0. Data loading
 train_url = "./data_in/global.csv"
 train = pd.read_csv(train_url, delimiter=',', header=None)
@@ -42,13 +54,15 @@ n = train.shape[0]
 projected = dim_red.random_projection(train, T)
 
 # 2. Clustering
-train["rate"] = cluster.fast_voa(projected, n, T, 10, 5)
-print(train["rate"])
+new_projected = prepare_projected_data(projected, T)
+train["predict"] = cluster.k_means(new_projected)
 train["label"] = ytrain
 
 # 3. Evaluation
-roc = eval.get_ROC(train)
-t = np.arange(0., 5., 0.01)
-plot(1, 1, roc[1], roc[0], 'b', t, t, 'r')
+classes = [0, 1]
+confusion_matrix_all = confusion_matrix(train["label"], train["predict"], binary=True)
+plt.figure()
+eval.plot_confusion_matrix(confusion_matrix_all, classes, normalize=False)
+plt.show()
 
 print("finish")

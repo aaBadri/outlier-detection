@@ -1,7 +1,7 @@
 import numpy as np
 from operator import add
 import math
-
+from sklearn.cluster import KMeans
 
 def __first_moment_estimator(projected, t, n):
     f1 = [0] * n
@@ -59,3 +59,9 @@ def fast_voa(projected, n, t, s1, s2):
                 (2 * math.pi * f1[i]) / (t - 1)
         var[i] = f2[i] - (f1[i] ** 2)
     return var
+
+
+def k_means(S):
+    X = np.array(S)
+    clusters = KMeans(n_clusters=2, random_state=0).fit(X)
+    return clusters.labels_
