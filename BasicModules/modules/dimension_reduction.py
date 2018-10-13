@@ -1,5 +1,8 @@
 import random
 import numpy as np
+from sklearn.decomposition import PCA
+import pandas as pd
+from sklearn.decomposition import TruncatedSVD
 
 
 def random_projection(S, t):
@@ -21,3 +24,4 @@ def random_projection(S, t):
             l[i].append((index, dotted))
         l[i] = sorted(l[i], key=lambda x: x[1])
     return l
+
