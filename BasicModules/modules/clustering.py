@@ -1,7 +1,16 @@
+import collections
+
 import numpy as np
 from operator import add
 import math
 from sklearn.cluster import KMeans
+from sklearn.cluster import DBSCAN
+from sklearn.neighbors import LocalOutlierFactor
+from PyNomaly import loop
+from sklearn.svm import OneClassSVM
+from sklearn.ensemble import IsolationForest
+from scipy.spatial.distance import euclidean
+
 
 def __first_moment_estimator(projected, t, n):
     f1 = [0] * n
@@ -61,7 +70,146 @@ def fast_voa(projected, n, t, s1, s2):
     return var
 
 
-def k_means(S):
+def recursive(X, level, labels):
+    clusters = KMeans(n_clusters=20, n_jobs=4, random_state=0).fit(X)
+    predict = list()
+    counter = dict()
+    for label in clusters.labels_:
+        if not label in counter.keys():
+            counter.update({label: 0})
+        counter[label] += 1
+    print(counter)
+    for label in range(20):
+        if counter[label] < 3:
+            for i in range(len(X)):
+                if clusters.labels_[i] == label:
+                    predict.append(i)
+        elif counter[label] > 30 and level > 0:
+            subspace = list()
+            index = 0
+            mapping = dict()
+            for i in range(len(X)):
+                if clusters.labels_[i] == label:
+                    subspace.append(X[i])
+                    mapping.update({index: i})
+                    index += 1
+            subspace = np.array(subspace)
+            p = recursive(subspace, level-1, labels)
+            for inde in p:
+                predict.append(mapping[inde])
+    return predict
+
+def k_means(S, n_clusters, outlier_cluster_size_limit):
+    # level = 1
     X = np.array(S)
-    clusters = KMeans(n_clusters=2, random_state=0).fit(X)
-    return clusters.labels_
+    predict = list()
+    clusters = KMeans(n_clusters=n_clusters, n_jobs=4, random_state=0).fit(X)
+    counter = dict()
+    for label in clusters.labels_:
+        if not label in counter.keys():
+            counter.update({label: 0})
+        counter[label] += 1
+    for i in range(len(X)):
+        label = clusters.labels_[i]
+        if counter[label] < outlier_cluster_size_limit :
+            predict.append(1)
+        else:
+            predict.append(0)
+    # print(counter)
+
+    return predict
+
+
+def DB_Scan(S, eps, min_samples):
+    X = np.array(S)
+    clusters = DBSCAN(eps=eps, min_samples=min_samples).fit(X)
+    predict = clusters.labels_
+    for i in range(len(predict)):
+        if predict[i] < 0:
+            predict[i] = 1
+        else:
+            predict[i] = 0
+    return predict
+
+
+def LOF(S, n_neighbors, contamination):
+    X = np.array(S)
+    clusters = LocalOutlierFactor(n_neighbors=n_neighbors, contamination=contamination).fit_predict(X)
+    predict = clusters
+    for i in range(len(predict)):
+        if predict[i] == -1:
+            predict[i] = 1
+        else:
+            predict[i] = 0
+    return predict
+
+
+def LOF_score(S):
+    X = np.array(S)
+    clf = LocalOutlierFactor()
+    clf.fit(X)
+    factores = clf._decision_function(X)
+    for i in range(len(factores)):
+        factores[i] = -1 * factores[i]
+    return factores
+
+
+def loOP(S, n_neighbours):
+    X = np.array(S)
+    m = loop.LocalOutlierProbability(X, extent=0.95, n_neighbors=n_neighbours).fit()
+    scores = m.local_outlier_probabilities
+    for i in scores:
+        print(i)
+    return scores
+
+
+def SVM(S, nu):
+    X = np.array(S)
+    clf = OneClassSVM(kernel='linear', random_state=0, nu=nu)
+    clf.fit(X)
+    clusters = clf.predict(X)
+    for i in range(len(clusters)):
+        if clusters[i] == -1:
+            clusters[i] = 1
+        else:
+            clusters[i] = 0
+    return clusters
+
+
+def SVM_score(S):
+    X = np.array(S)
+    clf = OneClassSVM(kernel='linear')
+    clf.fit(X)
+    scores = clf.decision_function(X)
+    min = 999999
+    max = -99999
+    for i in range(len(scores)):
+        scores[i] = -1 * scores[i]
+        if scores[i] < min:
+            min = scores[i]
+        if scores[i] > max:
+            max = scores[i]
+    return scores
+
+
+def isolation_forest(S, contamination):
+    X = np.array(S)
+    clf = IsolationForest(contamination=contamination, n_estimators=20)
+    clf.fit(X)
+    clusters = clf.predict(X)
+    for i in range(len(clusters)):
+        if clusters[i] == -1:
+            clusters[i] = 1
+        else:
+            clusters[i] = 0
+    return clusters
+
+
+def isolation_forest_score(S):
+    X = np.array(S)
+    clf = IsolationForest()
+    clf.fit(X)
+    rate = clf.decision_function(X)
+    for i in range(len(rate)):
+        rate[i] = -1 * rate[i]
+    return rate
