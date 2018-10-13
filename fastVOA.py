@@ -1,9 +1,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from modules import dimension_reduction as dim_red
-from modules import clustering as cluster
-from modules import evaluation as eval
+from BasicModules.modules import clustering as cluster, dimension_reduction as dim_red, evaluation as eval
 
 
 def sample(record_number, train):
