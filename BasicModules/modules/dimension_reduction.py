@@ -25,3 +25,30 @@ def random_projection(S, t):
         l[i] = sorted(l[i], key=lambda x: x[1])
     return l
 
+
+def prepare_projected_data(projected, t):
+    result = list()
+    for i in range(0, t):
+        l = sorted(projected[i], key=lambda x: x[0])
+        l = list(map(lambda x: x[1], l))
+        result.append(l)
+    result = list(map(list, zip(*result)))
+    return result
+
+
+def pca(S, t, is_product):
+    pca = PCA(n_components=t)
+    X = np.array(S)
+    pca.fit(X)
+    if not is_product:
+        print("Accumulative Variance Ratio : ", pca.explained_variance_ratio_.cumsum())
+    return pd.DataFrame(pca.transform(X))
+
+
+def SVD(S, t, is_product):
+    svd = TruncatedSVD(n_components=t)
+    X = np.array(S)
+    svd.fit(X)
+    if not is_product:
+        print("Accumulative Variance Ratio : ", svd.explained_variance_ratio_.cumsum())
+    return pd.DataFrame(svd.transform(X))
