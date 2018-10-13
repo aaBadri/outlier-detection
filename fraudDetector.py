@@ -86,3 +86,4 @@ for i in range(len(SVMR)):
     elif score > 1.5:
         print("#1#" + str(i) + "#" + ISOLATION_FOREST[i] + "#" + FAST_VOA[i] +
               "#" + LOFR[i] + "#" + SVMR[i] + "#")
+
