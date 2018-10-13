@@ -1,52 +1,62 @@
+#!/usr/bin/env python3 -W ignore::DeprecationWarning
+import warnings
+
+from sklearn.metrics import roc_auc_score, roc_curve
+
+warnings.filterwarnings("ignore", message="numpy.dtype size changed")
+with warnings.catch_warnings():
+    warnings.filterwarnings("ignore",category=DeprecationWarning)
+warnings.catch_warnings("ignore", message="Using a non-tuple sequence")
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-from BasicModules.modules import clustering as cluster, dimension_reduction as dim_red, evaluation as eval
+from modules.modules import utils, dimension_reduction as dim_red, evaluation as eval, clustering as cluster
+import sys
 
+DIMENSION = 20
 
-def sample(record_number, train):
-    origin_train = train
-    origin_train["label"] = ytrain
-    outliers = origin_train[origin_train["label"] == 1]
-    normal = origin_train[origin_train["label"] == 0]
-    outliers = outliers.sample(frac=1)
-    outliers = outliers[:10]
-    normal = normal[:record_number - 10]
-    data = pd.concat([outliers, normal])
-    return pd.DataFrame(data)
-
-
-def plot(axisX, axisY, list1, list2, color, list12=[], list22=[], color2=None):
-    if list12 is not []:
-        plt.plot(list1, list2, color + 'o', list12, list22, color2 + 's')
-        plt.axis([0, axisX, 0, axisY])
-        plt.show()
-    else:
-        plt.plot(list1, list2, color + 'o')
-        plt.axis([0, axisX, 0, axisY])
-        plt.show()
+try:
+    path = sys.argv[1]
+except IndexError:
+    is_product = False
+else:
+    is_product = True
 
 
 # 0. Data loading
-train_url = "./data_in/global.csv"
-train = pd.read_csv(train_url, delimiter=',', header=None)
-ytrain = train.iloc[:, -1]
-train = train[:-1]
-print("data is loaded")
+if is_product:
+    train, ytrain = utils.load_train_data(path, is_product)
+else:
+    train, ytrain = utils.load_train_data('../data_in/u2r.csv', is_product)
 
-T = 5
 # 1. Dimension Reduction
+T = DIMENSION
 n = train.shape[0]
 projected = dim_red.random_projection(train, T)
 
 # 2. Clustering
-train["rate"] = cluster.fast_voa(projected, n, T, 10, 5)
-print(train["rate"])
+train["rate"] = cluster.fast_voa(projected, n, T, 1, 1)
 train["label"] = ytrain
 
 # 3. Evaluation
-roc = eval.get_ROC(train)
-t = np.arange(0., 5., 0.01)
-plot(1, 1, roc[1], roc[0], 'b', t, t, 'r')
+if is_product:
+    scores = train["rate"]
+    scores = list(map(lambda x: float(x), scores))
+    max = max(scores)
+    for i in range(len(scores)):
+        scores[i] = scores[i] / max
+        print(scores[i])
+else:
+    scores = train["rate"]
+    scores = list(map(lambda x: float(x), scores))
+    max = max(scores)
+    for i in range(len(scores)):
+        scores[i] = scores[i] / max
+        # scores[i] = scores[i] * 1000
+        # scores[i] = int(scores[i])
+        # scores[i] = scores[i] / 1000
 
-print("finish")
+    fpr, tpr, threshold = roc_curve(ytrain, scores)
+    t = np.arange(0., 5., 0.001)
+    utils.plot(1, 1, fpr, tpr, 'b', t, t, 'r')
+    print("AUC score : ", roc_auc_score(ytrain, scores))
+    print("finish")

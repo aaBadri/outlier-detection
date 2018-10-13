@@ -1,7 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-from BasicModules.modules import clustering as cluster, dimension_reduction as dim_red, evaluation as eval
-from mlxtend.evaluate import confusion_matrix
+from modules.modules import clustering as cluster, dimension_reduction as dim_red, evaluation as eval
+from modules.modules.evaluation import confusion_matrix
 
 
 def sample(record_number, train):

@@ -98,6 +98,35 @@ def recursive(X, level, labels):
             for inde in p:
                 predict.append(mapping[inde])
     return predict
+    #     if counter[label] > max_count:
+    #         max_label = label
+    #         max_count = counter[label]
+    # pivot_label = max_label
+    # for i in range(len(X)):
+    #     label = clusters.labels_[i]
+    #     if label != pivot_label and counter[label] < 3:
+    #         predict.append(i)
+    #     if counter[label] == 768:
+    #         predict.append(i)
+    #     if counter[label] == 149:
+    #         predict.append(i)
+    # if level == 0:
+    #     return predict
+    # else:
+    #     subspace = list()
+    #     index = 0
+    #     mapping = dict()
+    #     for i in range(len(X)):
+    #         if clusters.labels_[i] == pivot_label:
+    #             subspace.append(X[i])
+    #             mapping.update({index: i})
+    #             index += 1
+    #     subspace = np.array(subspace)
+    #     p = recursive(subspace, level-1, labels)
+    #     for inde in p:
+    #         predict.append(mapping[inde])
+    #     return predict
+
 
 def k_means(S, n_clusters, outlier_cluster_size_limit):
     # level = 1
