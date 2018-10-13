@@ -6,7 +6,7 @@ from sklearn.metrics import roc_auc_score, roc_curve
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 with warnings.catch_warnings():
     warnings.filterwarnings("ignore",category=DeprecationWarning)
-warnings.catch_warnings("ignore", message="Using a non-tuple sequence")
+warnings.filterwarnings("ignore", message="Using a non-tuple sequence")
 import numpy as np
 import pandas as pd
 from modules.modules import utils, dimension_reduction as dim_red, evaluation as eval, clustering as cluster
