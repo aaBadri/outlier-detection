@@ -18,14 +18,15 @@ except IndexError:
 else:
     is_product = True
 
-DIMENSION = 20
+is_product=False
+DIMENSION = 5
 SEPARATOR = "==============================\n"
 
 # 0. Data loading
 if is_product:
     train, ytrain = utils.load_train_data(path, is_product)
 else:
-    train, ytrain = utils.load_train_data('../data_in/u2r.csv', is_product)
+    train, ytrain = utils.load_train_data('../data_in/PS.csv', is_product)
 
 # 1. Dimension Reduction
 T = DIMENSION

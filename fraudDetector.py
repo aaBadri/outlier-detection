@@ -19,7 +19,6 @@ import traceback
 LOFR = ''
 FAST_VOA = ''
 ISOLATION_FOREST = ''
-SVMR = ''
 
 ROOT = "/home/aab/work/outlier-detection/modules/"
 
@@ -49,13 +48,6 @@ def isolation_forest():
     ISOLATION_FOREST = ISOLATION_FOREST.split("\n")[:-1]
 
 
-def SVM():
-    global SVMR
-    SVMR = subprocess.check_output(["python3", ROOT + "SVM.py", sys.argv[1]], shell=False)
-    SVMR = SVMR.decode()
-    SVMR = SVMR.replace(']', '').replace('[', '')
-    SVMR = SVMR.split("\n")[:-1]
-
 
 thread1 = threading.Thread(target=LOF, )
 thread1.start()
@@ -66,24 +58,4 @@ thread2.join()
 thread3 = threading.Thread(target=isolation_forest, )
 thread3.start()
 thread3.join()
-thread4 = threading.Thread(target=SVM, )
-thread4.start()
-thread4.join()
-
-for i in range(len(SVMR)):
-    score = 0
-    if float(SVMR[i]) > 20000:
-        score += 1
-    if float(ISOLATION_FOREST[i]) > 0:
-        score += 1.5
-    if float(LOFR[i]) > 2:
-        score += 1
-    if float(FAST_VOA[i]) > 0.5:
-        score += 1
-    if score >= 2.5:
-        print("#2#" + str(i) + "#" + ISOLATION_FOREST[i] + "#" + FAST_VOA[i] +
-              "#" + LOFR[i] + "#" + SVMR[i] + "#")
-    elif score > 1.5:
-        print("#1#" + str(i) + "#" + ISOLATION_FOREST[i] + "#" + FAST_VOA[i] +
-              "#" + LOFR[i] + "#" + SVMR[i] + "#")
 

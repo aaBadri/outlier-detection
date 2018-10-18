@@ -21,9 +21,10 @@ except IndexError:
     is_product = False
 else:
     is_product = True
+is_product = False
 
-
-DIMENSION = 30
+DIMENSION = 20
+# DIMENSION = 3
 SEPARATOR = "==============================\n"
 
 
@@ -31,7 +32,7 @@ SEPARATOR = "==============================\n"
 if is_product:
     train, ytrain = utils.load_train_data(path, is_product)
 else:
-    train, ytrain = utils.load_train_data('./data_in/satan_normal.csv', is_product)
+    train, ytrain = utils.load_train_data('../data_in/creditcard.csv', is_product)
 
 # 1. Dimension Reduction
 T = DIMENSION

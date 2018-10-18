@@ -11,8 +11,8 @@ import numpy as np
 import pandas as pd
 from modules.modules import utils, dimension_reduction as dim_red, evaluation as eval, clustering as cluster
 import sys
-
-DIMENSION = 20
+#DIMENSION = 6
+DIMENSION = 3
 
 try:
     path = sys.argv[1]
@@ -21,16 +21,18 @@ except IndexError:
 else:
     is_product = True
 
+is_product = False
 
 # 0. Data loading
 if is_product:
     train, ytrain = utils.load_train_data(path, is_product)
 else:
-    train, ytrain = utils.load_train_data('../data_in/u2r.csv', is_product)
+    train, ytrain = utils.load_train_data('../data_in/PS.csv', is_product)
 
 # 1. Dimension Reduction
 T = DIMENSION
 n = train.shape[0]
+# projected = train
 projected = dim_red.random_projection(train, T)
 
 # 2. Clustering

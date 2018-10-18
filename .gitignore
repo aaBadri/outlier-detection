@@ -165,3 +165,8 @@ fabric.properties
 # End of https://www.gitignore.io/api/pycharm+all
 
 venv
+
+
+data_in/creditcard.csv
+data_in/PS.csv
+data_in/PS2.csv
