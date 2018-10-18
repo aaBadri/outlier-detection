@@ -1,59 +1,53 @@
 #!/usr/bin/env python3
 import warnings
-
-from sklearn.metrics import roc_curve, roc_auc_score
+import sys
+import threading
+from modules.IsolationForest import isolation_forest
+from modules.fastVOA import fast_voa
+from modules.LOF import lof
 
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 with warnings.catch_warnings():
     warnings.filterwarnings("ignore", category=DeprecationWarning)
 warnings.filterwarnings("ignore", message="Using a non-tuple sequence")
-import sys
-import subprocess
-import threading
-from modules.modules import clustering as cls
-import pandas as pd
-from modules.modules import utils
-import numpy as np
-import traceback
 
 LOFR = ''
 FAST_VOA = ''
 ISOLATION_FOREST = ''
 
-ROOT = "/home/aab/work/outlier-detection/modules/"
 
-
-def LOF():
+def lof_caller():
     global LOFR
-    LOFR = subprocess.check_output(["python3", ROOT + "LOF.py", sys.argv[1]], shell=False)
+    LOFR = lof(sys.argv[1], dimension=5, is_product=True)
     LOFR = LOFR.decode()
     LOFR = LOFR.replace(']', '').replace('[', '')
     LOFR = LOFR.split("\n")[:-1]
 
 
-def fast_voa():
+def fast_voa_caller():
     global FAST_VOA
-    FAST_VOA = subprocess.check_output(["python3", ROOT + "fastVOA.py", sys.argv[1]], shell=False)
+    FAST_VOA = fast_voa(sys.argv[1], dimension=5, is_product=True)
     FAST_VOA = FAST_VOA.decode()
     FAST_VOA = FAST_VOA.replace(']', '').replace('[', '')
     FAST_VOA = FAST_VOA.split("\n")[:-1]
 
 
-def isolation_forest():
+def isolation_forest_caller():
     global ISOLATION_FOREST
-    ISOLATION_FOREST = subprocess.check_output(
-        ["python3", ROOT + "IsolationForest.py", sys.argv[1]], shell=False)
+    ISOLATION_FOREST = isolation_forest(sys.argv[1], dimension=5, is_product=True)
     ISOLATION_FOREST = ISOLATION_FOREST.decode()
     ISOLATION_FOREST = ISOLATION_FOREST.replace(']', '').replace('[', '')
     ISOLATION_FOREST = ISOLATION_FOREST.split("\n")[:-1]
 
 
-thread1 = threading.Thread(target=LOF, )
+thread1 = threading.Thread(target=lof_caller(), )
 thread1.start()
 thread1.join()
-thread2 = threading.Thread(target=fast_voa, )
+
+thread2 = threading.Thread(target=fast_voa_caller(), )
 thread2.start()
 thread2.join()
-thread3 = threading.Thread(target=isolation_forest, )
+
+thread3 = threading.Thread(target=isolation_forest_caller(), )
 thread3.start()
 thread3.join()

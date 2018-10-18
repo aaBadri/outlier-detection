@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
-import copy
-import warnings
 
+import warnings
 import numpy as np
+from modules.modules import utils, dimension_reduction as dim_red, clustering as cluster
+from sklearn.metrics import roc_auc_score, roc_curve
 
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
-from modules.modules import utils, dimension_reduction as dim_red, evaluation as eval, clustering as cluster
-import sys
-from sklearn.metrics import roc_auc_score, roc_curve
 
 SEPARATOR = "==============================\n"
 
