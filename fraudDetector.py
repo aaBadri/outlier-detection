@@ -48,7 +48,6 @@ def isolation_forest():
     ISOLATION_FOREST = ISOLATION_FOREST.split("\n")[:-1]
 
 
-
 thread1 = threading.Thread(target=LOF, )
 thread1.start()
 thread1.join()
@@ -58,4 +57,3 @@ thread2.join()
 thread3 = threading.Thread(target=isolation_forest, )
 thread3.start()
 thread3.join()
-
