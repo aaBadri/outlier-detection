@@ -47,12 +47,14 @@ def fraud_detector():
     thread3.start()
     thread3.join()
 
-    print("iso : " + str(len(isolation_forest_result)))
-    print("fast voa : " + str(len(fast_voa_result)))
-    print("lof : " + str(len(lof_result)))
+    # print("iso : " + str(len(isolation_forest_result)))
+    # print("fast voa : " + str(len(fast_voa_result)))
+    # print("lof : " + str(len(lof_result)))
     final_result = []
     for i in range(len(fast_voa_result)):
         score = 0
+        if float(isolation_forest_result[i]) > 0:
+            score += 1.5
         if float(lof_result[i]) > 2:
             score += 1
         if float(fast_voa_result[i]) > 0.5:
@@ -71,7 +73,7 @@ def fraud_detector():
             final_result.append(
                 {
                     "index": str(i),
-                    "detection": "suspended",
+                    "detection": "suspected",
                     "if": isolation_forest_result[i],
                     "fastvoa": fast_voa_result[i],
                     "lof": lof_result[i]

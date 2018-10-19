@@ -21,7 +21,7 @@ def lof(path='../data_in/PS.csv', dimension=20, is_product=True):
         train, ytrain = utils.load_train_data(path, is_product)
     else:
         train, ytrain = utils.load_train_data(path, is_product)
-    print("lof train : " + str(len(train)))
+    # print("lof train : " + str(len(train)))
 
     # 1. Dimension Reduction
     T = dimension

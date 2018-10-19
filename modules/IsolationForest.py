@@ -20,7 +20,7 @@ def isolation_forest(path='../data_in/PS.csv', dimension=5, is_product=True):
     else:
         train, ytrain = utils.load_train_data(path, is_product)
 
-    print("iso train : " + str(len(train)))
+    # print("iso train : " + str(len(train)))
 
     # 1. Dimension Reduction
     T = dimension

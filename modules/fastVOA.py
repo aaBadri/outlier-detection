@@ -20,7 +20,7 @@ def fast_voa(path='../data_in/PS.csv', dimension=5, is_product=True):
         train, ytrain = utils.load_train_data(path, is_product)
     else:
         train, ytrain = utils.load_train_data(path, is_product)
-    print("fast voa train : " + str(len(train)))
+    # print("fast voa train : " + str(len(train)))
 
     # 1. Dimension Reduction
     T = dimension
