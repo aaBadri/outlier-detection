@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Result</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <style>
+        #table-div {
+            font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+
+        }
+
+        #table-div td, #customers th {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        #table-div tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        #table-div tr:hover {
+            background-color: #c2c2c2;
+        }
+
+        #table-div th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            text-align: center;
+            background-color: #3086af;
+            color: white;
+        }
+
+        #table-div tr:last-child td:first-child {
+            border-bottom-left-radius: 10px;
+        }
+
+        #table-div tr:last-child td:last-child {
+            border-bottom-right-radius: 10px;
+        }
+    </style>
+</head>
+<body style="background-color: #DDDDDD;text-align: center">
+<div style="width: 700px;height: auto;padding: 30px;margin:auto;font-weight:bold;color: #3086af;font-size: 45px;font-family: 'Consolas', monospace">
+    Fraud Detection System
+</div>
+<div id="table-div" style="width:70%;margin: auto;padding-top: 5%">
+    <button type="button" class="btn btn-primary"
+            style="float:left;color: white;margin-bottom: 5px">
+        <a href="http://localhost:5000/upload" style="color: white;text-decoration: none;">return to upload page</a>
+    </button>
+    <div style="margin:auto;border-radius:10px;background-color:#cacaca;color: #337ab7;font-size: 25px;font-family: 'Consolas', monospace">
+        FileName : {{ filename }}
+    </div>
+    <table class="table table-striped" style="text-align: center">
+        <thead>
+        <tr>
+            <th>Data Index</th>
+            <th>Detection</th>
+            <th>IF</th>
+            <th>FastVOA</th>
+            <th>LOF</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in result %}
+            <tr>
+                <td> {{ item['index'] }} </td>
+                <td> {{ item['detection'] }} </td>
+                <td> {{ item['if'] }} </td>
+                <td> {{ item['fastvoa'] }} </td>
+                <td> {{ item['lof'] }} </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
