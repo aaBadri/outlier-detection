@@ -4,9 +4,9 @@
     <title>Result</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="../static/bootstrap.min.css">
+    <script src="../static/jquery.min.js"></script>
+    <script src="../static/bootstrap.min.js"></script>
     <style>
         #table-div {
             font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
@@ -69,13 +69,13 @@
         </thead>
         <tbody>
         {% for item in result %}
-            <tr>
-                <td> {{ item['index'] }} </td>
-                <td> {{ item['detection'] }} </td>
-                <td> {{ item['if'] }} </td>
-                <td> {{ item['fastvoa'] }} </td>
-                <td> {{ item['lof'] }} </td>
-            </tr>
+        <tr>
+            <td> {{ item['index'] }}</td>
+            <td> {{ item['detection'] }}</td>
+            <td> {{ item['if'] }}</td>
+            <td> {{ item['fastvoa'] }}</td>
+            <td> {{ item['lof'] }}</td>
+        </tr>
         {% endfor %}
         </tbody>
     </table>
