@@ -20,6 +20,7 @@ def fast_voa(path='../data_in/PS.csv', dimension=5, is_product=True):
         train, ytrain = utils.load_train_data(path, is_product)
     else:
         train, ytrain = utils.load_train_data(path, is_product)
+    print("fast voa train : " + str(len(train)))
 
     # 1. Dimension Reduction
     T = dimension
@@ -32,25 +33,21 @@ def fast_voa(path='../data_in/PS.csv', dimension=5, is_product=True):
     train["label"] = ytrain
 
     # 3. Evaluation
-    if is_product:
-        scores = train["rate"]
-        scores = list(map(lambda x: float(x), scores))
-        max = max(scores)
-        for i in range(len(scores)):
-            scores[i] = scores[i] / max
-            print(scores[i])
-    else:
-        scores = train["rate"]
-        scores = list(map(lambda x: float(x), scores))
-        max = max(scores)
-        for i in range(len(scores)):
-            scores[i] = scores[i] / max
-            # scores[i] = scores[i] * 1000
-            # scores[i] = int(scores[i])
-            # scores[i] = scores[i] / 1000
+    scores = train["rate"]
+    scores = list(map(lambda x: float(x), scores))
+    maxi = max(scores)
+    for i in range(len(scores)):
+        scores[i] = scores[i] / maxi
 
+    if is_product:
+        return scores
+    else:
         fpr, tpr, threshold = roc_curve(ytrain, scores)
         t = np.arange(0., 5., 0.001)
         utils.plot(1, 1, fpr, tpr, 'b', t, t, 'r')
         print("AUC score : ", roc_auc_score(ytrain, scores))
         print("finish")
+
+
+# result = fast_voa()
+# print("fast voa : " + str(len(result)))

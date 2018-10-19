@@ -9,7 +9,6 @@ with warnings.catch_warnings():
     warnings.filterwarnings("ignore", category=DeprecationWarning)
 warnings.filterwarnings("ignore", message="Using a non-tuple sequence")
 
-
 # DIMENSION = 20 credit
 # DIMENSION = 3  ps
 
@@ -22,6 +21,7 @@ def lof(path='../data_in/PS.csv', dimension=20, is_product=True):
         train, ytrain = utils.load_train_data(path, is_product)
     else:
         train, ytrain = utils.load_train_data(path, is_product)
+    print("lof train : " + str(len(train)))
 
     # 1. Dimension Reduction
     T = dimension
@@ -35,8 +35,7 @@ def lof(path='../data_in/PS.csv', dimension=20, is_product=True):
 
     # 4. Evaluation
     if is_product:
-        for i in train["rate"]:
-            print(i)
+        return train["rate"]
     else:
         fpr, tpr, threshold = roc_curve(ytrain, train["rate"])
         t = np.arange(0., 5., 0.001)
